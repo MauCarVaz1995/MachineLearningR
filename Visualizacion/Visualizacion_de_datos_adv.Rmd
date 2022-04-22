@@ -1,0 +1,409 @@
+---
+title: "Visualización de datos Avanzada"
+author: "Mauricio Carrillo"
+date: "21/10/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Diferentes maneras de hacer gráficos
+
+
+#### Scatter Plots 
+
+```{r warning=FALSE}
+library(ggplot2)
+auto <- read.csv("C:/Users/LUIS 1/Desktop/MachineLearinngR/Visualizacion/auto-mpg.csv", stringsAsFactors = F)
+auto$cylinders <- factor(auto$cylinders,
+                         labels = c("3C", "4C", "5C", "6C", "8C"))
+head(auto)
+
+plot <- ggplot(auto, aes(weight, mpg))
+
+plot + geom_point()
+
+plot + geom_point(alpha = 1/2, size = 5, 
+                  aes(color = factor(cylinders))) + 
+  geom_smooth(method = "lm", se = TRUE, col ="green") +
+  facet_grid(cylinders~.) +
+  theme_bw(base_family = "Arial", base_size = 10)+
+  labs(x = "Peso") + labs(y = "Millas por Galón")+
+  labs(title = "Consumo vs Peso")
+ 
+qplot(x=weight, y = mpg, data = auto,
+      geom=c("point", "smooth"), method = "lm", 
+      formula = y~x, color = cylinders, 
+      main = "Regresión de MPG sobre el Peso")
+```
+
+#### Line Charts 
+
+```{r warning=FALSE}
+library(ggplot2)
+mtcars <- read.csv("C:/Users/LUIS 1/Desktop/MachineLearinngR/Visualizacion/mtcars.csv", stringsAsFactors = F)
+head(mtcars)
+
+plot <- ggplot(mtcars, aes(wt, mpg))
+plot + geom_line()
+plot + geom_line(linetype = "dashed", color = "red")
+
+plot + geom_line(aes(color = as.factor(carb)))
+
+```
+
+#### Bar Graphs 
+
+```{r warning=FALSE}
+
+bike <- read.csv("C:/Users/LUIS 1/Desktop/MachineLearinngR/Visualizacion/daily-bike-rentals.csv")
+bike$season <- factor(bike$season, 
+                      levels = c(1,2,3,4),
+                      labels = c("Invierno", "Primavera", "Verano", "Otoño"))
+bike$workingday <- factor(bike$workingday,
+                          levels = c(0,1),
+                          labels = c("Día libre", "Día de trabajo"))
+bike$weathersit <- factor(bike$weathersit,
+                          levels = c(1,2,3),
+                          labels = c("Buen tiempo", "Día nublado", "Mal tiempo"))
+
+library(dplyr)
+bike.sum = bike %>%
+  group_by(season, workingday) %>%
+  summarize(reantal = sum(cnt))
+
+bike.sum
+
+ggplot(bike.sum, aes(x = season, y = reantal, 
+                     fill = workingday, label = scales::comma(reantal))) +
+  geom_bar(show.legend = T, stat = "identity", fill="lightblue", colour = "black") + 
+  labs(title = "Alquileres de bicicletas por estación y día") +
+  scale_y_continuous(labels = scales::comma) +
+  geom_text(size = 3, position = position_stack(vjust = 0.5))
+
+```
+
+#### Distribution plots
+
+```{r warning=FALSE}
+library(ggplot2)
+
+geiser <- read.csv("C:/Users/LUIS 1/Desktop/MachineLearinngR/Visualizacion/geiser.csv")
+head(geiser)
+
+plot <- ggplot(geiser, aes(x=waiting))
+plot + geom_histogram()
+plot + geom_histogram(binwidth = 5, 
+                      fill="white", colour = "black")
+
+ggplot(geiser, aes(x=waiting, y = ..density..))+
+  geom_histogram(fill="cornsilk", color = "grey60", size=.2)+
+  geom_density() + xlim(35, 105)
+
+
+ggplot(geiser, aes(x=eruptions, y = ..density..))+
+  geom_histogram(fill="cornsilk", color = "grey60", size=.2)+
+  geom_density() + xlim(0,7)
+
+```
+
+#### Mosaic Plot
+
+```{r warning=FALSE}
+library(stats)
+mtcars <- read.csv("C:/Users/LUIS 1/Desktop/MachineLearinngR/Visualizacion/mtcars.csv")
+head(mtcars)
+
+mosaicplot(~ gear + carb, data = mtcars, 
+           color=2:7,  las = 1)
+```
+
+
+#### Tree Maps
+
+```{r warning=FALSE}
+library(treemap)
+
+branch <- c(rep("branch-1",4), rep("branch-2",2), rep("branch-3",3))
+subbranch <- paste("subbranch",c(1,2,3,4,1,2,1,2,3), sep = "-")
+values = c(15,4,22,13,11,8,6,1,25)
+data <- data.frame(branch, subbranch, values)
+
+treemap(data, index = c("branch", "subbranch"),
+        vSize = "values", type = "index")
+
+
+posts <- read.csv("C:/Users/LUIS 1/Desktop/MachineLearinngR/Visualizacion/post-data.csv")
+head(posts)
+
+treemap(posts, 
+        index = c("category", "comments"),
+        vSize = "views", type = "index")
+```
+
+
+#### Correlation Matrix
+
+```{r warning=FALSE}
+library(ggplot2)
+library(corrplot)
+mtcars <- read.csv("C:/Users/LUIS 1/Desktop/MachineLearinngR/Visualizacion/mtcars.csv")
+head(mtcars)
+mtcars$X = NULL
+mtcars.cor <- cor(mtcars, method = "pearson")
+
+round(mtcars.cor, digits = 2)
+corrplot(mtcars.cor)
+
+corrplot(mtcars.cor, method = "shade", 
+         shade.col = NA, tl.col = "black", 
+         tl.srt = 45)
+
+col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", 
+                          "#77AADD", "#4477AA"))
+corrplot(mtcars.cor, method = "square", 
+         tl.col = "black",
+         tl.srt = 45, col = col(200), 
+         addCoef.col = "black",
+         order = "AOE", 
+         type = "upper",
+         diag = F,
+         addshade = "all")
+
+
+
+library(reshape2)
+mtcars.melted <- melt(mtcars.cor)
+head(mtcars.cor)
+head(mtcars.melted)
+
+ggplot(data = mtcars.melted, 
+       aes(x=Var1, y=Var2,fill=value))+
+  geom_tile()
+
+
+
+get_lower_triangle <- function(cormat){
+  cormat[upper.tri(cormat)] <- NA
+  return(cormat)
+}
+
+get_upper_triangle <- function(cormat){
+  cormat[lower.tri(cormat)] <- NA
+  return(cormat)
+}
+
+reorder_cormat <- function(cormat){
+  dd <- as.dist((1-cormat)/2)
+  hc <- hclust(dd)
+  cormat <- cormat[hc$order, hc$order]
+}
+
+
+
+cormat <- reorder_cormat(mtcars.cor)
+cormat.ut <- get_upper_triangle(cormat)
+cormat.ut.melted <- melt(cormat.ut, na.rm = T)
+
+ggplot(cormat.ut.melted, aes(Var2, Var1, fill = value)) + 
+  geom_tile(color = "white")+
+  scale_fill_gradient2(low = "blue", high = "red",
+                       mid = "white", midpoint = 0,
+                       limit = c(-1,1), space = "Lab",
+                       name="Pearson\nCorrelation")+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 45, vjust=1, 
+                                   size = 12, hjust=1))+
+  coord_fixed()
+
+```
+
+
+#### Redes
+
+```{r warning=FALSE}
+library(igraph)
+
+g.dir <- graph(edges = c(1,2, 2,3, 2,4, 1,4, 5,5, 3,6, 5,6), n=6)
+g.n_dir <- graph(edges = c(1,2, 2,3, 2,4, 1,4,
+                           5,5, 3,6, 5,6), n=6, directed = F)
+
+plot(g.dir)
+plot(g.n_dir)
+
+g_isolated <- graph(edges = c("Juan", "María", 
+                      "María", "Ana",
+                      "Ana", "Juan", 
+                      "José", "María",
+                      "Pedro", "José",
+                      "Joel", "Pedro"),
+                    isolates = c( "Carmen", "Antonio", 
+                                  "Mario", "Vicente"))
+
+par(mfrow = c(1,1))
+plot(g_isolated, edge.arrow.size = 1,
+     vertex.color="gold",vertex.size = 15,
+     vertex.frame.color = "gray", 
+     vertex.label.color = "black",
+     vertex.label.cex = 0.8,
+     vertex.label.dist = 2,
+     edge.curved=0.2)
+```
+
+
+#### labels and legends
+
+```{r warning=FALSE}
+
+#ggtitle(titulo)
+#xlab(eje x)
+#ylab(eje y)
+#labs(....)
+
+library(ggplot2)
+tooth <- read.csv("C:/Users/LUIS 1/Desktop/MachineLearinngR/Visualizacion/ToothGrowth.csv")
+head(tooth)
+
+# box plot
+ggplot(tooth, aes(x=dose, y=len, fill = as.factor(dose)))+
+  geom_boxplot() +
+  ggtitle("Crecimiento dental en función de una dosis (mg/día) de vitamina C")+
+  xlab("Dosis de vitamina C (mg/día)") +
+  ylab("Crecimiento dental (en mm)") +
+  labs(fill = "Dosis en mg/día") +
+  theme(legend.position = "bottom") +
+  guides(fill = F)
+
+
+
+ggplot(tooth, aes(x=dose, y = len))+
+  geom_boxplot()+
+  theme_bw()+
+  #theme_dark()+
+  #theme_classic()+
+  #theme_grey()+
+  #theme(plot.background = element_rect(fill="darkblue"))
+  theme(axis.text.x = element_text(face = "bold", 
+                                   family = "Times",
+                                   size = 14,
+                                   angle = 45,
+                                   color = "#995566"),
+        axis.text.y = element_text(face = "italic",
+                                   family = "Courier",
+                                   size = 16,
+                                   angle = 30, 
+                                   color = "#449955")
+        )+
+  theme(panel.border = element_blank())+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+```
+
+
+
+#### Plot Multivariante
+
+```{r warning=FALSE}
+library(ggplot2)
+library(GGally)
+bike <- read.csv("C:/Users/LUIS 1/Desktop/MachineLearinngR/Visualizacion/daily-bike-rentals.csv")
+head(bike)
+
+bike$season = factor(bike$season,
+                     levels = c(1,2,3,4),
+                     labels = c("Invierno", "Primavera", "Verano", "Otoño"))
+
+bike$weathersit <- factor(bike$weathersit,
+                          levels = c(1,2,3),
+                          labels = c("Despejado", "Nublado", "Lluvia"))
+
+bike$weekday <- factor(bike$weekday, 
+                       levels = 0:6,
+                       labels = c("D", "L", "M", "X", "J", "V", "S"))
+
+hist(bike$windspeed)
+bike$windspeed.fac <- cut(bike$windspeed, breaks = 3,
+                          labels = c("Poco", "Medio", "Elevado"))
+
+head(bike)
+
+
+
+ggplot(bike, aes(x=temp, y = cnt))+
+  geom_point(size=3, aes(color=windspeed.fac))+
+  theme(legend.position = "bottom")+
+  geom_smooth(method="lm", se=F, col="red")+
+  facet_grid(weekday ~ season)
+
+
+
+auto <- read.csv("C:/Users/LUIS 1/Desktop/MachineLearinngR/Visualizacion/auto-mpg.csv", stringsAsFactors = F)
+auto$cylinders <- factor(auto$cylinders,
+                         labels = c("3C", "4C", "5C", "6C", "8C"))
+
+#postscript(file="multivariant.ps")
+#pdf(file="multivariant.pdf")
+png(file="C:/Users/LUIS 1/Desktop/MachineLearinngR/Visualizacion/multivariant.png", width = 3000, height = 3000, res = 72)
+ggpairs(auto[,2:7], 
+        aes(colour = cylinders, 
+            alpha = 0.4),
+        title = "Análisis multivariante de coches",
+        upper = list(continuous = "density"),
+        lower = list(combo = "denstrip"))+
+  theme(plot.title = element_text(hjust = 0.5))  
+dev.off()
+
+```
+
+#### Gráficos en 3D
+
+```{r}
+library(plot3D)
+mtcars <- read.csv("C:/Users/LUIS 1/Desktop/MachineLearinngR/Visualizacion/mtcars.csv")
+
+rownames(mtcars) = mtcars$X
+mtcars$X = NULL
+head(mtcars)
+
+scatter3D(x=mtcars$disp,
+          y=mtcars$wt,
+          z=mtcars$mpg,
+          clab = c("Millas/Galón"),
+          pch=19,
+          cex = 0.5,
+          theta = 18, #azimutal
+          phi=20, # colatitud
+          main="Coches de los 70'",
+          xlab = "Desplazamiento (cu.in.)",
+          ylab = "Peso (x1000lb)",
+          zlab = "Millas por galón",
+          bty = "g")
+
+text3D(x=mtcars$disp,
+       y=mtcars$wt,
+       z=mtcars$mpg,
+       labels = rownames(mtcars),
+       add = T, 
+       colkey = F, 
+       cex = 0.5)
+
+
+data(VADeaths)
+head(VADeaths)
+hist3D(z = VADeaths, 
+       scale = F, expand = 0.01,
+       bty = "g", phi = 30,
+       col = "#1188CC", border = "black",
+       shade = 0.2, ltheta = 80,
+       space = 0.3,
+       ticktype = "detailed")
+
+
+scatter3D(x = mtcars$disp,
+          y = mtcars$wt,
+          z = mtcars$mpg,
+          type = "h")
+```
+
