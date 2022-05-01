@@ -1,0 +1,49 @@
+---
+title: "Normalización"
+author: "Mauricio Carrillo"
+date: "1/5/2022"
+output: html_document
+---
+
+```{r}
+housing <- read.csv("C:/Users/LUIS 1/Desktop/MachineLearningR/data/t1//BostonHousing.csv")
+str(housing)
+head(housing)
+```
+#### Función scale
+
+`Scale()` es una función genérica cuyo método por defecto centra y/o escala las columnas de una matriz numérica.
+
+```{r}
+housing.z <- scale(housing, center = TRUE, scale = TRUE)#con respecto a la media y desv std
+head(housing.z)
+
+housing.mean <- scale(housing, center = TRUE, scale = FALSE)#sólo con respecto a la media
+head(housing.mean)
+
+housing.sd <- scale(housing, center = FALSE, scale = TRUE)#sólo con respecto a la desv std
+head(housing.sd)
+
+housing.none <- scale(housing, center = FALSE, scale = FALSE) #no hace nada
+head(housing.none)
+
+#sd = sqrt(sum(x^2)/(n-1))
+```
+Una función muy similar al ejemplo de rescale.
+
+```{r}
+scale.many = function(dataframe, cols){
+  names <- names(dataframe)
+  for(col in cols){
+    name <- paste(names[col], "z", sep = ".")
+    dataframe[name] <- scale(dataframe[,col])
+  }
+  cat(paste("Hemos normalizado ", length(cols), " variable(s)"))
+  dataframe
+}
+```
+
+```{r}
+head(housing <- scale.many(housing, c(1, 3, 5:8)))
+```
+
