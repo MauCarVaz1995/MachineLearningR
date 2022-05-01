@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r}
-housing <- read.csv("C:/Users/LUIS 1/Desktop/MachineLearningR/data/t1//BostonHousing.csv")
+housing <- read.csv("C:/Users/LUIS 1/Desktop/MachineLearningR/data/t1/BostonHousing.csv")
 str(housing)
 head(housing)
 ```

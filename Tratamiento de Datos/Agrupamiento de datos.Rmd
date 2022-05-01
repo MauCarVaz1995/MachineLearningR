@@ -1,0 +1,57 @@
+---
+title: "Agrupamiento de datos"
+author: "Mauricio Carrillo"
+date: "1/5/2022"
+output: html_document
+---
+
+#### Carga de los datos
+
+```{r}
+students <- read.csv("C:/Users/LUIS 1/Desktop/MachineLearningR/data/t1/data-conversion.csv")
+str(students)
+head(students)
+```
+Se hacen dos arreglos con categorías de valores.
+
+```{r}
+bp <- c(-Inf, 10000, 31000, Inf)
+names <- c("Low", "Average", "High")
+```
+
+#### Función cut
+
+La función `cut()`divide el rango del array en intervalos y también codifica los valores según el intervalo en el que caen. El intervalo más a la izquierda corresponde al nivel uno, el siguiente a la izquierda al nivel dos y así sucesivamente.
+
+```{r}
+print(students$Income.cat <- cut(students$Income, breaks = bp, labels = names))
+print(students$Income.cat2 <- cut(students$Income, breaks = bp))
+
+print(students$Income.cat3 <- cut(students$Income, 
+                            breaks = 4, 
+                            labels = c("Level 1", "Level 2", 
+                                       "Level 3", "Level 4")
+                            ))
+
+```
+
+
+#### dummy variables
+
+La versión 4 de R da problemas con este paquete.
+
+```{r}
+students <- read.csv("C:/Users/LUIS 1/Desktop/MachineLearningR/data/t1/data-conversion.csv")
+#install.packages("dummies")
+#library(dummies)
+
+
+#students.dummy <- dummy.data.frame(students, sep = ".")
+#names(students.dummy)
+
+#dummy(students$State, sep=".")
+
+#dummy.data.frame(students, names = c("State", "Gender"), sep = ".")
+
+```
+
