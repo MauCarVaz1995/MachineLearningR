@@ -1,0 +1,11 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/896826/238784ab88b046a1a9c29edd1c906b3b
+bundleId: https://api.rpubs.com/api/v1/document/896826/238784ab88b046a1a9c29edd1c906b3b
+url: http://rpubs.com/Maucarvaz/896826
+when: 1651383865.90093
+lastSyncTime: 1651383865.90093

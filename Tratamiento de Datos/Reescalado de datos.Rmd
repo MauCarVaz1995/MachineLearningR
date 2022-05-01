@@ -35,9 +35,30 @@ Esto es lo que básicamente haría la función.
 
 ```
 
-Se le puede especificar un rango de valores para los cuales reescalar como parámetro.
+Se le puede especificar un máximo y mínimo.
 
 ```{r}
 rescale(students$Income, to = c(0, 100))
+```
+
+Una función, que dado un dataset y un vector de valores, reescale las columnas que se encuentran en dicho vector.
+
+```{r}
+rescale.many <- function(dataframe, cols){
+  names <- names(dataframe)
+  for(col in cols){
+    name <- paste(names[col], "rescaled", sep = ".")
+    dataframe[name] <- rescale(dataframe[,col]) 
+  }
+  cat(paste("Hemos reescalado ", length(cols), " variable(s)"))
+  dataframe
+}
+
+
+students <- rescale.many(students, c(1,4,5))
+```
+
+```{r}
+print(students)
 ```
 
