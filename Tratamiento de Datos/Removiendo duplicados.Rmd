@@ -1,0 +1,44 @@
+---
+title: "Removiendo duplicados"
+author: "Mauricio Carrillo"
+date: "30/3/2021"
+output: html_document
+---
+
+#### Armando un dataset improvisado
+
+```{r}
+family.salary = c(40000, 60000, 50000, 80000, 60000, 70000, 60000)
+family.size = c(4, 3, 2, 2, 3, 4, 3)
+family.car = c("Lujo", "Compacto", "Utilitario", "Lujo", 
+               "Compacto", "Compacto", "Compacto")
+family <- data.frame(family.salary, family.size, family.car)
+```
+
+#### Vistazo del dataset 
+
+```{r}
+
+str(family)
+head(family)
+```
+
+La función `unique` devuelve un vector, data frame o matriz pero con elementos/filas duplicados eliminados.
+
+```{r}
+family.unique <- unique(family)
+family.unique
+
+```
+
+La función `duplicated()` determina qué elementos de un vector o dataframe son duplicados de elementos con subíndices más pequeños y devuelve un vector lógico que indica qué elementos (filas) son duplicados.
+
+
+```{r}
+duplicated(family)
+
+family[duplicated(family),]
+```
+
+
+

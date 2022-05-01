@@ -1,0 +1,64 @@
+---
+title: "Valores faltantes"
+author: "Mauricio Carrillo"
+date: "30/3/2021"
+output: html_document
+---
+
+#### Cargando los datos
+
+```{r}
+data <- read.csv("C:/Users/LUIS 1/Desktop/MachineLearningR/data/t1/missing-data.csv", na.strings = "")
+str(data)
+head(data, 22)
+
+```
+
+```{r}
+data.cleaned <- na.omit(data)
+head(data.cleaned)
+```
+
+```{r}
+is.na(data[4,2])
+is.na(data[4,1])
+is.na(data$Income)
+```
+
+
+#### Limpiar NA de solamente la variable Income
+
+```{r}
+data.income.cleaned <- data[!is.na(data$Income),]
+head(data.income.cleaned, 22)
+```
+
+
+#### Filas completas para un data frame
+
+```{r}
+complete.cases(data)
+data.cleaned.2 <- data[complete.cases(data), ]
+
+head(data.cleaned.2)
+
+```
+
+#### Convertir los ceros de ingresos en NA
+
+```{r}
+(data$Income[data$Income == 0] <- NA)
+head(data$Income, 22)
+```
+
+
+#### Medidas de centralización y dispersión
+
+```{r}
+mean(data$Income)
+mean(data$Income, na.rm = TRUE)
+
+sd(data$Income)
+sd(data$Income, na.rm = TRUE)
+```
+

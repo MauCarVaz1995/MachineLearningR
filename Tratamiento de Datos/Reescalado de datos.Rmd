@@ -1,0 +1,43 @@
+---
+title: "Reescalado de datos"
+author: "Mauricio Carrillo"
+date: "30/4/2022"
+output: html_document
+---
+
+#### Carga y vistazo rápido del dataset
+
+```{r}
+library(scales)
+students <- read.csv("C:/Users/LUIS 1/Desktop/MachineLearningR/data/t1/data-conversion.csv")
+str(students)
+head(students, 10)
+```
+
+### Función `rescale()`
+
+La función `rescale()` devuelve un vector de valores continuos vector de acuerdo a un valor máximo y mínimo.
+
+```{r}
+print(students$Income.rescaled <- rescale(students$Income))
+
+```
+
+Esto es lo que básicamente haría la función.
+
+```{r}
+
+(students$Income - min(students$Income))/
+  (max(students$Income) - min(students$Income))
+
+((students$Income - min(students$Income))/
+  (max(students$Income) - min(students$Income))) == (students$Income.rescaled <- rescale(students$Income))
+
+```
+
+Se le puede especificar un rango de valores para los cuales reescalar como parámetro.
+
+```{r}
+rescale(students$Income, to = c(0, 100))
+```
+
